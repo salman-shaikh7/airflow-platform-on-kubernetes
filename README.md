@@ -13,6 +13,7 @@ local multi-node Kubernetes cluster.
 ## Documentation
 
 - [Connecting to the Kubernetes cluster](docs/kubernetes-cluster-access.md)
+- [Initial Airflow deployment plan](docs/plan_v1.md)
 
 ## Status
 
