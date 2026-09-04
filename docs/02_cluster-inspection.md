@@ -33,6 +33,9 @@ the supported `kubectl` version skew of one minor version. We should install a
 `kubectl` version compatible with Kubernetes `v1.34` before relying on this
 setup for ongoing administration.
 
+Resolution: Completed in
+[Step 4: Align the kubectl client version](04_kubectl-version-alignment.md).
+
 ## 2. Node health
 
 Commands:
@@ -159,6 +162,9 @@ Before deploying Airflow:
 1. Install Helm.
 2. Configure persistent storage.
 3. Align the local `kubectl` client with the Kubernetes server version.
+
+Helm installation and `kubectl` alignment were completed after this initial
+inspection. Persistent storage remains to be configured.
 
 Optional improvement:
 

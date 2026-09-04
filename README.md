@@ -16,6 +16,7 @@ local multi-node Kubernetes cluster.
 - [Step 1: Configure access to the Kubernetes cluster](docs/01_kubernetes-cluster-access.md)
 - [Step 2: Inspect the Kubernetes cluster](docs/02_cluster-inspection.md)
 - [Step 3: Install Helm](docs/03_helm-installation.md)
+- [Step 4: Align the kubectl client version](docs/04_kubectl-version-alignment.md)
 
 ## Status
 
