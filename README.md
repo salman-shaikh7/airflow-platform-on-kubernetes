@@ -12,8 +12,10 @@ local multi-node Kubernetes cluster.
 
 ## Documentation
 
-- [Connecting to the Kubernetes cluster](docs/kubernetes-cluster-access.md)
-- [Initial Airflow deployment plan](docs/plan_v1.md)
+- [Initial Airflow deployment plan](docs/00_plan_v1.md)
+- [Step 1: Configure access to the Kubernetes cluster](docs/01_kubernetes-cluster-access.md)
+- [Step 2: Inspect the Kubernetes cluster](docs/02_cluster-inspection.md)
+- [Step 3: Install Helm](docs/03_helm-installation.md)
 
 ## Status
 

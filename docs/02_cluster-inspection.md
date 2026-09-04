@@ -1,4 +1,4 @@
-# Initial Kubernetes Cluster Inspection
+# Step 2: Initial Kubernetes Cluster Inspection
 
 Inspection date: 2026-09-03
 

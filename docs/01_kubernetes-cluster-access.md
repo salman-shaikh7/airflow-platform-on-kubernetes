@@ -1,4 +1,4 @@
-# Connecting to the Kubernetes Lab Cluster
+# Step 1: Configure Access to the Kubernetes Lab Cluster
 
 ## Cluster architecture
 
@@ -14,6 +14,21 @@ Tell kubectl which configuration file to use:
 
 ```bash
 export KUBECONFIG="$HOME/.kube/k8s-lab-config"
+```
+
+To configure this automatically for every new Bash terminal:
+
+```bash
+grep -qxF 'export KUBECONFIG="$HOME/.kube/k8s-lab-config"' "$HOME/.bashrc" ||
+echo 'export KUBECONFIG="$HOME/.kube/k8s-lab-config"' >> "$HOME/.bashrc"
+
+source "$HOME/.bashrc"
+```
+
+Protect the kubeconfig because it contains cluster administrator credentials:
+
+```bash
+chmod 600 "$HOME/.kube/k8s-lab-config"
 ```
 
 Confirm the active context:
