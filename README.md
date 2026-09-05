@@ -17,6 +17,7 @@ local multi-node Kubernetes cluster.
 - [Step 2: Inspect the Kubernetes cluster](docs/02_cluster-inspection.md)
 - [Step 3: Install Helm](docs/03_helm-installation.md)
 - [Step 4: Align the kubectl client version](docs/04_kubectl-version-alignment.md)
+- [Step 5: Configure and test persistent storage](docs/05_persistent-storage.md)
 
 ## Status
 
