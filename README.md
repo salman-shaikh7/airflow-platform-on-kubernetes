@@ -19,6 +19,7 @@ local multi-node Kubernetes cluster.
 - [Step 4: Align the kubectl client version](docs/04_kubectl-version-alignment.md)
 - [Step 5: Configure and test persistent storage](docs/05_persistent-storage.md)
 - [Step 6: Deploy and troubleshoot Airflow](docs/06_airflow-deployment-troubleshooting.md)
+- [Operations quick reference](docs/07_operations-quick-reference.md)
 
 ## Status
 
