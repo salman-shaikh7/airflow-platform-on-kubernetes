@@ -20,6 +20,8 @@ local multi-node Kubernetes cluster.
 - [Step 5: Configure and test persistent storage](docs/05_persistent-storage.md)
 - [Step 6: Deploy and troubleshoot Airflow](docs/06_airflow-deployment-troubleshooting.md)
 - [Operations quick reference](docs/07_operations-quick-reference.md)
+- [Technical debt](docs/08_technical-debt.md)
+- [Step 7: Install and configure Metrics Server](docs/09_metrics-server.md)
 
 ## Status
 
