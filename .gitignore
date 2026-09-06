@@ -1,3 +1,4 @@
 
 # Downloaded upstream charts used for reference
 /reference/
+/helm/airflow-secrets-values.yaml

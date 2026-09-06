@@ -1,0 +1,106 @@
+# Run each Airflow task in a temporary Kubernetes Pod.
+executor: KubernetesExecutor
+
+# Deploy PostgreSQL inside the cluster for the initial lab platform.
+postgresql:
+  enabled: true
+
+  primary:
+    persistence:
+      enabled: true
+      storageClass: local-path
+      size: 8Gi
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+scheduler:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+  startupProbe:
+    initialDelaySeconds: 60
+    periodSeconds: 15
+    timeoutSeconds: 30
+    failureThreshold: 10
+
+apiServer:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+dagProcessor:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+triggerer:
+  persistence:
+    enabled: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
+
+# Enable built-in example DAGs for initial executor testing.
+env:
+  - name: AIRFLOW__CORE__LOAD_EXAMPLES
+    value: "True"
+
+# Keep logs ephemeral for the first installation.
+# Later, configure remote logging with S3-compatible object storage.
+logs:
+  persistence:
+    enabled: false
+
+
+workers:
+  kubernetes:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+
+statsd:
+  enabled: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+# Use the pre-created Fernet key instead of generating one during installation.
+fernetKeySecretName: airflow-fernet-key
+
+# Use a stable API/session signing key.
+apiSecretKeySecretName: airflow-api-secret
+
+# Use a stable JWT signing key for communication between Airflow components.
+jwtSecretName: airflow-jwt-secret
