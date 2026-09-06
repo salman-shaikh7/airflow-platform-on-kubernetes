@@ -1,275 +1,221 @@
 # Operations Quick Reference
 
-Quick commands for operating the local Kubernetes and Airflow environment.
+## VM cluster lifecycle
 
-## VM names
+VMs: `k8s-control-plane`, `k8s-worker-1`, `k8s-worker-2`
 
-| Role | VM name |
-|---|---|
-| Control plane | `k8s-control-plane` |
-| Worker 1 | `k8s-worker-1` |
-| Worker 2 | `k8s-worker-2` |
-
-## 1. Start the cluster
-
-### Start all VMs
+### Start
 
 ```bash
-for vm in k8s-control-plane k8s-worker-1 k8s-worker-2; do
-  virsh start "$vm"
-done
+for vm in k8s-control-plane k8s-worker-1 k8s-worker-2; do virsh start "$vm"; done
 ```
 
-`virsh start` may report that a VM is already active. That is harmless.
-
-### Start VMs individually
-
-```bash
-virsh start k8s-control-plane
-virsh start k8s-worker-1
-virsh start k8s-worker-2
-```
-
-## 2. Check VM status
-
-### Running VMs only
-
-```bash
-virsh list
-```
-
-### All VMs, including stopped VMs
+### Status
 
 ```bash
 virsh list --all
 ```
-
-### State of each cluster VM
-
-```bash
-for vm in k8s-control-plane k8s-worker-1 k8s-worker-2; do
-  printf '%-22s ' "$vm"
-  virsh domstate "$vm"
-done
-```
-
-## 3. Verify Kubernetes
-
-The Kubernetes services need a short time to initialize after the VMs start.
 
 ```bash
 kubectl get nodes
 ```
 
-Expected state:
+After startup, wait briefly if the nodes are not immediately `Ready`.
 
-```text
-k8s-control-plane   Ready
-k8s-worker-1        Ready
-k8s-worker-2        Ready
-```
-
-If the connection is initially refused, wait briefly and run the command again.
-
-## 4. Shut down the cluster
-
-### Request a graceful shutdown
+### Shut down
 
 ```bash
-for vm in k8s-worker-1 k8s-worker-2 k8s-control-plane; do
-  virsh shutdown "$vm"
-done
+for vm in k8s-worker-1 k8s-worker-2 k8s-control-plane; do virsh shutdown "$vm"; done
 ```
-
-Workers are shut down first and the control plane last.
-
-### Confirm shutdown
 
 ```bash
 virsh list --all
 ```
 
-Wait until all three VMs show `shut off`.
+Use `shutdown` for a graceful stop; avoid `virsh destroy` during normal use.
 
-> Avoid `virsh destroy` during normal operation. It is comparable to cutting
-> the power rather than performing a graceful shutdown.
+## Inspect a Kubernetes cluster
 
-## Kubernetes commands
+Run these groups from top to bottom when exploring a cluster.
 
-Use these commands in order when you want to understand what is running in an
-unfamiliar Kubernetes cluster.
-
-### 1. Select and confirm the cluster context
-
-List all contexts configured in kubeconfig:
+### 1. Context and connection
 
 ```bash
 kubectl config get-contexts
 ```
 
-The `*` in the `CURRENT` column identifies the active context.
-
-Show only the current context:
-
 ```bash
 kubectl config current-context
 ```
-
-Switch to another context by replacing `<context-name>`:
 
 ```bash
 kubectl config use-context <context-name>
 ```
 
-For example:
-
-```bash
-kubectl config use-context kubernetes-admin@kubernetes
-```
-
-Changing context determines which cluster and credentials subsequent `kubectl`
-commands use. Confirm access to the selected cluster:
-
 ```bash
 kubectl cluster-info
 ```
 
-### 2. Inspect the nodes
-
-Start by checking which machines belong to the cluster and whether they are
-healthy:
+### 2. Nodes and namespaces
 
 ```bash
 kubectl get nodes -o wide
 ```
 
-For detailed health, capacity, labels, taints, and recent node events:
-
-```bash
-kubectl describe node <node-name>
-```
-
-### 3. List the namespaces
-
-Namespaces divide cluster resources into logical groups:
-
 ```bash
 kubectl get namespaces
 ```
 
-### 4. Get a quick cluster-wide overview
-
-Show common resources across every namespace:
+### 3. Workloads
 
 ```bash
-kubectl get all --all-namespaces
+kubectl get pods -A -o wide
 ```
-
-`kubectl get all` is a convenient overview, but it does not literally include
-every Kubernetes resource type. The next commands inspect each important area.
-
-### 5. Inspect workloads
-
-See all pods, their status, IP address, and assigned node:
 
 ```bash
-kubectl get pods --all-namespaces -o wide
+kubectl get deployments,statefulsets,daemonsets -A
 ```
-
-See the controllers that create and manage pods:
 
 ```bash
-kubectl get deployments,statefulsets,daemonsets --all-namespaces
+kubectl get jobs,cronjobs -A
 ```
-
-See scheduled and completed workloads:
-
-```bash
-kubectl get jobs,cronjobs --all-namespaces
-```
-
-Inspect only one namespace by replacing `<namespace>`:
 
 ```bash
 kubectl get all -n <namespace>
 ```
 
-### 6. Inspect networking
+`kubectl get all -A` is a fast overview, but does not include every resource
+type.
 
-Services provide stable access to pods, while Ingress resources expose HTTP or
-HTTPS routes:
+#### Pods by status
+
+All existing pods:
 
 ```bash
-kubectl get services --all-namespaces
-kubectl get ingress --all-namespaces
+kubectl get pods -A
 ```
 
-### 7. Inspect storage
+Running:
+
+```bash
+kubectl get pods -A --field-selector=status.phase=Running
+```
+
+Pending:
+
+```bash
+kubectl get pods -A --field-selector=status.phase=Pending
+```
+
+Failed, including most evicted pods:
+
+```bash
+kubectl get pods -A --field-selector=status.phase=Failed
+```
+
+Successfully completed:
+
+```bash
+kubectl get pods -A --field-selector=status.phase=Succeeded
+```
+
+Non-running:
+
+```bash
+kubectl get pods -A --field-selector=status.phase!=Running
+```
+
+Active only; exclude succeeded and failed pods:
+
+```bash
+kubectl get pods -A --field-selector=status.phase!=Succeeded,status.phase!=Failed
+```
+
+Evicted pods (`jq` required):
+
+```bash
+kubectl get pods -A -o json | jq -r '.items[] | select(.status.reason == "Evicted") | [.metadata.namespace, .metadata.name] | @tsv'
+```
+
+Terminating pods (`jq` required):
+
+```bash
+kubectl get pods -A -o json | jq -r '.items[] | select(.metadata.deletionTimestamp != null) | [.metadata.namespace, .metadata.name] | @tsv'
+```
+
+### 4. Networking
+
+```bash
+kubectl get services,ingresses -A
+```
+
+### 5. Storage
 
 ```bash
 kubectl get storageclass
-kubectl get persistentvolume
-kubectl get persistentvolumeclaim --all-namespaces
 ```
-
-- `StorageClass` describes how storage is provisioned.
-- `PersistentVolume` represents the available or allocated storage.
-- `PersistentVolumeClaim` represents a workload's request for storage.
-
-### 8. Check recent cluster events
-
-Events often reveal scheduling failures, image-pull errors, failed health
-checks, and storage problems:
 
 ```bash
-kubectl get events --all-namespaces --sort-by='.metadata.creationTimestamp'
+kubectl get persistentvolume
 ```
 
-### 9. Check CPU and memory usage
+```bash
+kubectl get persistentvolumeclaim -A
+```
 
-These commands work when Kubernetes Metrics Server is installed:
+### 6. Live CPU and memory
 
 ```bash
 kubectl top nodes
-kubectl top pods --all-namespaces
 ```
 
-### 10. Investigate a specific resource
+```bash
+kubectl top pods -A --sort-by=memory
+```
 
-After the overview identifies a problem, inspect that resource in detail.
+```bash
+kubectl top pods -A --sort-by=cpu
+```
 
-Inspect pod configuration, status, and events:
+```bash
+kubectl top pods -A --containers
+```
+
+### 7. Recent events
+
+```bash
+kubectl get events -A --sort-by='.metadata.creationTimestamp'
+```
+
+## Quick troubleshooting
+
+Replace values inside `<...>`.
+
+Full resource details and events:
 
 ```bash
 kubectl describe pod <pod-name> -n <namespace>
 ```
 
-List the containers inside a pod:
-
-```bash
-kubectl get pod <pod-name> -n <namespace> \
-  -o jsonpath='{.spec.containers[*].name}{"\n"}'
-```
-
-Read logs from a single-container pod:
+Recent logs:
 
 ```bash
 kubectl logs <pod-name> -n <namespace> --tail=100
 ```
 
-Read logs from a particular container:
+Logs for a particular container:
 
 ```bash
 kubectl logs <pod-name> -n <namespace> -c <container-name> --tail=100
 ```
 
-Follow new log messages; press `Ctrl+C` to stop:
+Follow logs (`Ctrl+C` to stop):
 
 ```bash
 kubectl logs <pod-name> -n <namespace> -c <container-name> --follow
 ```
 
-Read logs from the previous crashed container instance:
+Logs from the previous crashed container:
 
 ```bash
 kubectl logs <pod-name> -n <namespace> -c <container-name> --previous --tail=100
