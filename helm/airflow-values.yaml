@@ -66,7 +66,7 @@ triggerer:
 # Enable built-in example DAGs for initial executor testing.
 env:
   - name: AIRFLOW__CORE__LOAD_EXAMPLES
-    value: "True"
+    value: "False"
 
 # Keep logs ephemeral for the first installation.
 # Later, configure remote logging with S3-compatible object storage.
