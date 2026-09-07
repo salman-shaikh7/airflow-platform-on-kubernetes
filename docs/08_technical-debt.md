@@ -122,3 +122,30 @@ kubectl exec -n airflow deployment/airflow-api-server -c api-server -- airflow c
 
 This item is complete when the login, validation, refresh, expiration,
 revocation, and secret-rotation lifecycle has been tested and documented.
+
+## TD-005: Airflow live-log lookup before remote logs
+
+**Status:** Open  
+**Type:** Learning / UX debt
+
+### Current behavior
+
+With `KubernetesExecutor`, Airflow tries to read logs from the temporary task
+pod while a task is running. After the task finishes, the UI reads the durable
+copy from MinIO (`s3://airflow-logs`). Setting
+`apiServer.allowPodLogReading: false` blocks Kubernetes pod-log access, but does
+not remove the UI's initial live-log lookup; it can therefore display a
+harmless `403 Forbidden` message before showing the remote log.
+
+### Upstream references
+
+- [Airflow issue #21387](https://github.com/apache/airflow/issues/21387)
+- [Airflow issue #45516](https://github.com/apache/airflow/issues/45516)
+- [Airflow discussion #45624](https://github.com/apache/airflow/discussions/45624)
+
+### Future work
+
+Study Airflow's live-log selection path and determine whether a future Airflow
+release adds a supported way to suppress the initial pod lookup. Keep remote
+object storage as the authoritative source and avoid custom UI patches unless
+there is a clear operational need.

@@ -24,6 +24,8 @@ local multi-node Kubernetes cluster.
 - [Step 7: Install and configure Metrics Server](docs/09_metrics-server.md)
 - [Step 8: Configure MetalLB](docs/10_metallb-load-balancer.md)
 - [Step 9: Expose Airflow with Gateway API](docs/11_gateway-api-envoy.md)
+- [Step 10: Deliver DAGs with Git sync](docs/12_airflow-dag-git-sync.md)
+- [Step 11: Store task logs remotely with MinIO](docs/13_airflow-remote-logging-minio.md)
 
 ## Platform architecture
 

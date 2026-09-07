@@ -35,6 +35,8 @@ scheduler:
     failureThreshold: 10
 
 apiServer:
+  allowPodLogReading: false
+
   resources:
     requests:
       cpu: 100m
@@ -130,3 +132,16 @@ dags:
       limits:
         cpu: 100m
         memory: 128Mi
+
+# Give all Airflow components and task pods access to the MinIO connection.
+extraEnvFrom: |
+  - secretRef:
+      name: airflow-minio-connection
+
+# Store task logs in the MinIO airflow-logs bucket.
+config:
+  logging:
+    remote_logging: "True"
+    remote_base_log_folder: "s3://airflow-logs"
+    remote_log_conn_id: "minio_s3"
+    delete_local_logs: "False"
