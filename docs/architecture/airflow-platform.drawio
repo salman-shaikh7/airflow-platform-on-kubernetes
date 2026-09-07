@@ -1,0 +1,34 @@
+<mxfile host="app.diagrams.net" modified="2026-09-07T00:00:00.000Z" agent="Codex" version="24.7.17">
+  <diagram id="airflow-platform" name="Airflow Platform">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" page="1" pageWidth="1440" pageHeight="820">
+      <root>
+        <mxCell id="0"/><mxCell id="1" parent="0"/>
+        <mxCell id="brand-airflow" value="Airflow" style="shape=image;html=1;image=logos/airflow.svg;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;" vertex="1" parent="1"><mxGeometry x="1130" y="20" width="82" height="48" as="geometry"/></mxCell>
+        <mxCell id="brand-kubernetes" value="K8s" style="shape=image;html=1;image=logos/kubernetes.svg;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;" vertex="1" parent="1"><mxGeometry x="1230" y="20" width="85" height="48" as="geometry"/></mxCell>
+        <mxCell id="brand-linux" value="" style="shape=image;html=1;image=logos/linux.svg;" vertex="1" parent="1"><mxGeometry x="1350" y="20" width="42" height="42" as="geometry"/></mxCell>
+        <mxCell id="host" value="DEVELOPER LAPTOP" style="swimlane;rounded=1;html=1;fillColor=#ffffff;strokeColor=#94a3b8;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="35" y="100" width="225" height="665" as="geometry"/></mxCell>
+        <mxCell id="browser" value="Browser&lt;br&gt;&lt;b&gt;airflow.local&lt;/b&gt;" style="rounded=1;html=1;fillColor=#eff6ff;strokeColor=#60a5fa;" vertex="1" parent="host"><mxGeometry x="23" y="65" width="180" height="88" as="geometry"/></mxCell>
+        <mxCell id="tools" value="kubectl + Helm&lt;br&gt;Platform administration" style="rounded=1;html=1;fillColor=#f5f3ff;strokeColor=#a78bfa;" vertex="1" parent="host"><mxGeometry x="23" y="200" width="180" height="88" as="geometry"/></mxCell>
+        <mxCell id="cluster" value="KUBERNETES CLUSTER · THREE UBUNTU VMs" style="swimlane;rounded=1;html=1;fillColor=#ffffff;strokeColor=#94a3b8;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="305" y="100" width="1100" height="665" as="geometry"/></mxCell>
+        <mxCell id="metallb" value="MetalLB&lt;br&gt;192.168.122.200" style="rounded=1;html=1;fillColor=#eff6ff;strokeColor=#60a5fa;" vertex="1" parent="cluster"><mxGeometry x="50" y="115" width="205" height="82" as="geometry"/></mxCell>
+        <mxCell id="envoy" value="Envoy Gateway&lt;br&gt;HTTP :80" style="rounded=1;html=1;fillColor=#eff6ff;strokeColor=#60a5fa;" vertex="1" parent="cluster"><mxGeometry x="300" y="115" width="205" height="82" as="geometry"/></mxCell>
+        <mxCell id="route" value="HTTPRoute&lt;br&gt;airflow.local" style="rounded=1;html=1;fillColor=#eff6ff;strokeColor=#60a5fa;" vertex="1" parent="cluster"><mxGeometry x="550" y="115" width="230" height="82" as="geometry"/></mxCell>
+        <mxCell id="service" value="Airflow Service&lt;br&gt;ClusterIP :8080" style="rounded=1;html=1;fillColor=#eff6ff;strokeColor=#60a5fa;" vertex="1" parent="cluster"><mxGeometry x="825" y="115" width="220" height="82" as="geometry"/></mxCell>
+        <mxCell id="airflow" value="AIRFLOW NAMESPACE" style="swimlane;rounded=1;html=1;dashed=1;fillColor=#ffffff;strokeColor=#a5b4fc;fontStyle=1;" vertex="1" parent="cluster"><mxGeometry x="25" y="250" width="730" height="275" as="geometry"/></mxCell>
+        <mxCell id="api" value="API Server + UI" style="rounded=1;html=1;fillColor=#fff7ed;strokeColor=#fb923c;" vertex="1" parent="airflow"><mxGeometry x="25" y="75" width="185" height="78" as="geometry"/></mxCell>
+        <mxCell id="scheduler" value="Scheduler&lt;br&gt;KubernetesExecutor" style="rounded=1;html=1;fillColor=#fff7ed;strokeColor=#fb923c;" vertex="1" parent="airflow"><mxGeometry x="235" y="75" width="185" height="78" as="geometry"/></mxCell>
+        <mxCell id="components" value="DAG Processor · Triggerer" style="rounded=1;html=1;fillColor=#fff7ed;strokeColor=#fb923c;" vertex="1" parent="airflow"><mxGeometry x="445" y="75" width="250" height="78" as="geometry"/></mxCell>
+        <mxCell id="tasks" value="Temporary task Pods" style="rounded=1;html=1;fillColor=#fff7ed;strokeColor=#fb923c;" vertex="1" parent="airflow"><mxGeometry x="235" y="180" width="185" height="65" as="geometry"/></mxCell>
+        <mxCell id="postgres" value="PostgreSQL&lt;br&gt;Airflow metadata" style="rounded=1;html=1;fillColor=#ecfdf5;strokeColor=#34d399;" vertex="1" parent="airflow"><mxGeometry x="490" y="180" width="205" height="65" as="geometry"/></mxCell>
+        <mxCell id="storage" value="PERSISTENCE&lt;br&gt;&lt;br&gt;8 GiB PVC · local-path&lt;br&gt;&lt;br&gt;Worker-node filesystem" style="rounded=1;html=1;fillColor=#ecfdf5;strokeColor=#34d399;fontStyle=1;" vertex="1" parent="cluster"><mxGeometry x="785" y="250" width="290" height="275" as="geometry"/></mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2563eb;strokeWidth=2;endArrow=block;" edge="1" parent="1" source="browser" target="metallb"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2563eb;strokeWidth=2;endArrow=block;" edge="1" parent="cluster" source="metallb" target="envoy"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2563eb;strokeWidth=2;endArrow=block;" edge="1" parent="cluster" source="envoy" target="route"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2563eb;strokeWidth=2;endArrow=block;" edge="1" parent="cluster" source="route" target="service"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2563eb;strokeWidth=2;endArrow=block;" edge="1" parent="cluster" source="service" target="api"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;strokeColor=#7c3aed;endArrow=block;" edge="1" parent="airflow" source="scheduler" target="tasks"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#059669;endArrow=block;" edge="1" parent="cluster" source="postgres" target="storage"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

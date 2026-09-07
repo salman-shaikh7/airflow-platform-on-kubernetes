@@ -27,96 +27,28 @@ local multi-node Kubernetes cluster.
 
 ## Platform architecture
 
-```mermaid
-flowchart TB
-  user([User])
+![Airflow platform deployment architecture](docs/architecture/airflow-platform.svg)
 
-  subgraph laptop["Laptop / Host Machine"]
-    browser["Browser<br/>http://airflow.local"]
-    kubectl["kubectl and Helm"]
-    hosts["/etc/hosts<br/>airflow.local → 192.168.122.200"]
-  end
+The diagram intentionally stays at deployment-overview level:
 
-  subgraph libvirt["Libvirt Virtual Network — 192.168.122.0/24"]
-    apiEndpoint["Kubernetes API<br/>192.168.122.131:6443"]
-    lbAddress["MetalLB address<br/>192.168.122.200:80"]
-  end
+- Blue arrows show browser traffic through MetalLB and Envoy Gateway.
+- Purple arrows show Kubernetes control operations and task-pod creation.
+- Green arrows show PostgreSQL persistence through its PVC.
+- The editable source is
+  [airflow-platform.drawio](docs/architecture/airflow-platform.drawio).
 
-  subgraph cluster["Kubernetes Cluster"]
-    direction TB
+### Request path
 
-    subgraph nodes["Three Ubuntu VMs"]
-      control["Control plane<br/>192.168.122.131"]
-      worker1["Worker 1<br/>192.168.122.94"]
-      worker2["Worker 2<br/>192.168.122.38"]
-    end
+```memaid
+Browser → airflow.local → MetalLB → Envoy Gateway
+        → HTTPRoute → Airflow Service → Airflow API pod
+```
 
-    subgraph platform["Platform Services"]
-      calico["Calico<br/>Pod networking"]
-      metrics["Metrics Server<br/>CPU and memory metrics"]
-      storage["Local Path Provisioner<br/>Dynamic local volumes"]
-      metallb["MetalLB<br/>LoadBalancer IP allocation + L2 announcement"]
-      envoyController["Envoy Gateway Controller<br/>Gateway API management"]
-    end
+### Task execution
 
-    subgraph traffic["Application Traffic Path"]
-      envoyService["Envoy LoadBalancer Service"]
-      envoyProxy["Envoy Proxy"]
-      gateway["Gateway<br/>HTTP :80"]
-      route["HTTPRoute<br/>Host: airflow.local"]
-      airflowService["airflow-api-server Service<br/>ClusterIP :8080"]
-    end
-
-    subgraph airflow["Airflow Namespace"]
-      api["API Server + Web UI"]
-      scheduler["Scheduler"]
-      dagProcessor["DAG Processor"]
-      triggerer["Triggerer"]
-      statsd["StatsD"]
-      postgres[("PostgreSQL<br/>Airflow metadata")]
-      taskPods["Temporary task Pods<br/>KubernetesExecutor"]
-      pvc["PersistentVolumeClaim<br/>8 GiB, local-path"]
-      nodeDisk[("Worker-node disk")]
-    end
-  end
-
-  user --> browser
-  user --> kubectl
-  browser -. resolves through .-> hosts
-  hosts --> lbAddress
-  kubectl --> apiEndpoint --> control
-
-  metallb -. assigns and advertises .-> lbAddress
-  lbAddress --> envoyService --> envoyProxy
-  envoyController -. configures .-> gateway
-  gateway --> envoyProxy
-  envoyProxy --> route --> airflowService --> api
-
-  api --> postgres
-  scheduler --> postgres
-  dagProcessor --> postgres
-  triggerer --> postgres
-  scheduler -. creates through Kubernetes API .-> taskPods
-  taskPods --> api
-  scheduler -. emits metrics .-> statsd
-
-  postgres --> pvc --> storage --> nodeDisk
-  calico -. connects pods and services .-> airflowService
-  metrics -. reads node and pod usage .-> nodes
-
-  classDef person fill:#172554,stroke:#60a5fa,color:#fff,stroke-width:2px;
-  classDef access fill:#eff6ff,stroke:#3b82f6,color:#172554;
-  classDef network fill:#ecfeff,stroke:#06b6d4,color:#164e63;
-  classDef platformSvc fill:#f5f3ff,stroke:#8b5cf6,color:#3b0764;
-  classDef airflowSvc fill:#fff7ed,stroke:#f97316,color:#7c2d12;
-  classDef data fill:#ecfdf5,stroke:#10b981,color:#064e3b;
-
-  class user person;
-  class browser,kubectl,hosts access;
-  class apiEndpoint,lbAddress,envoyService,envoyProxy,gateway,route,airflowService network;
-  class control,worker1,worker2,calico,metrics,storage,metallb,envoyController platformSvc;
-  class api,scheduler,dagProcessor,triggerer,statsd,taskPods airflowSvc;
-  class postgres,pvc,nodeDisk data;
+```text
+Scheduler → KubernetesExecutor → temporary task Pod
+          → Airflow execution API → PostgreSQL metadata
 ```
 
 ## Status
