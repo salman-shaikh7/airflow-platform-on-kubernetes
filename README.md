@@ -23,6 +23,7 @@ local multi-node Kubernetes cluster.
 - [Technical debt](docs/08_technical-debt.md)
 - [Step 7: Install and configure Metrics Server](docs/09_metrics-server.md)
 - [Step 8: Configure MetalLB](docs/10_metallb-load-balancer.md)
+- [Step 9: Expose Airflow with Gateway API](docs/11_gateway-api-envoy.md)
 
 ## Status
 

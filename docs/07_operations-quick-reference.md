@@ -220,3 +220,9 @@ Logs from the previous crashed container:
 ```bash
 kubectl logs <pod-name> -n <namespace> -c <container-name> --previous --tail=100
 ```
+
+## Airflow UI
+
+```text
+http://airflow.local
+```
