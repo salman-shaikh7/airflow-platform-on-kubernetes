@@ -117,6 +117,7 @@ dags:
   gitSync:
     enabled: true
     repo: https://github.com/salman-shaikh7/airflow-platform-on-kubernetes.git
+    branch: main
     ref: main
     depth: 1
     subPath: dags
