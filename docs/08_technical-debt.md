@@ -48,6 +48,29 @@ kubectl top nodes
 This item is complete when metrics work without `--kubelet-insecure-tls` and
 the Metrics Server logs contain no kubelet certificate-verification errors.
 
+## TD-006: Make monitoring storage durable
+
+**Status:** Open  
+**Type:** Platform reliability
+
+### Current state
+
+Prometheus and Grafana were installed with persistence disabled to conserve
+resources during initial lab work. Prometheus retains metrics for 24 hours on
+the pod's temporary filesystem; Grafana dashboards and settings are also
+stored temporarily. Their data disappears if the pods are recreated.
+
+Airflow task logs are separate and are stored persistently in the MinIO PVC.
+
+### Future work
+
+- Give Prometheus a persistent volume and define an appropriate retention
+  policy.
+- Give Grafana a persistent volume or provision dashboards and data sources
+  entirely from Git.
+- Evaluate long-term metrics storage such as Thanos, Mimir, or a managed
+  monitoring service.
+
 ## TD-002: Deepen Kubernetes ingress and Gateway API knowledge
 
 **Status:** Open  
