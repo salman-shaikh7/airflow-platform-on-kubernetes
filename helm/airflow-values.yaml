@@ -43,6 +43,12 @@ apiServer:
       cpu: 500m
       memory: 1Gi
 
+  startupProbe:
+    initialDelaySeconds: 60
+    periodSeconds: 15
+    timeoutSeconds: 30
+    failureThreshold: 10
+
 dagProcessor:
   resources:
     requests:
