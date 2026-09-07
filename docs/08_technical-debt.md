@@ -4,7 +4,7 @@ Items intentionally deferred while building the lab platform.
 
 ## TD-001: Kubelet serving certificates lack IP SANs
 
-**Status:** Open  
+**Status:** Open
 **Scope:** All three Kubernetes nodes
 
 ### Problem
@@ -68,3 +68,25 @@ the Metrics Server logs contain no kubelet certificate-verification errors.
 Use Gateway API with Envoy Gateway for the lab's permanent HTTP entry point.
 Return to the topics above for a detailed comparison after the initial route to
 Airflow is working.
+
+## TD-003: Secure the Airflow Gateway with HTTPS
+
+**Status:** Open
+**Type:** Platform hardening
+
+### Current state
+
+Airflow is available at `http://airflow.local` through an unencrypted HTTP
+Gateway listener. This is acceptable only for the isolated local lab.
+
+### Future work
+
+- Add a trusted development certificate for `airflow.local` using `mkcert`.
+- Store the certificate and private key in a Kubernetes TLS Secret without
+  committing private key material to Git.
+- Add an HTTPS listener on port `443` and redirect HTTP to HTTPS.
+- Study the production approach using real DNS, cert-manager, and an ACME or
+  organizational certificate authority with automatic renewal.
+
+This item is complete when the browser trusts `https://airflow.local`, HTTP is
+redirected to HTTPS, and certificate renewal is documented.
