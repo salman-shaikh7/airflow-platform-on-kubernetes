@@ -5,3 +5,5 @@
 
 # Machine-specific local configuration backups
 /backups/
+
+.venv/
