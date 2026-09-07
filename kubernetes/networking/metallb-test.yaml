@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: metallb-test
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: metallb-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metallb-test
+  template:
+    metadata:
+      labels:
+        app: metallb-test
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.29-alpine
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: metallb-test
+spec:
+  type: LoadBalancer
+  selector:
+    app: metallb-test
+  ports:
+    - port: 80
+      targetPort: 80
