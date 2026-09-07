@@ -110,3 +110,22 @@ apiSecretKeySecretName: airflow-api-secret
 
 # Use a stable JWT signing key for communication between Airflow components.
 jwtSecretName: airflow-jwt-secret
+
+
+# Synchronize DAG files from the public GitHub repository.
+dags:
+  gitSync:
+    enabled: true
+    repo: https://github.com/salman-shaikh7/airflow-platform-on-kubernetes.git
+    ref: main
+    depth: 1
+    subPath: dags
+    period: 30s
+    recommendedProbeSetting: true
+    resources:
+      requests:
+        cpu: 20m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
