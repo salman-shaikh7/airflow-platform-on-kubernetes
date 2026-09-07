@@ -90,3 +90,35 @@ Gateway listener. This is acceptable only for the isolated local lab.
 
 This item is complete when the browser trusts `https://airflow.local`, HTTP is
 redirected to HTTPS, and certificate renewal is documented.
+
+## TD-004: Understand Airflow UI sessions and JWT authentication
+
+**Status:** Open
+**Type:** Learning debt
+
+### Current understanding
+
+After login, the Airflow UI stores a signed JWT in the browser's `_token`
+cookie. The browser sends it with later requests, and the API server validates
+it using the shared `airflow-jwt-secret`. Because replacement API-server pods
+use the same secret, pod restarts do not normally invalidate existing sessions.
+
+### Topics to revisit
+
+- JWT claims, signatures, issuer, audience, and expiration.
+- The UI token cookie and browser cookie security attributes.
+- Default and customized session expiration times.
+- Automatic token refresh and server-side token revocation.
+- Logout behaviour and the `revoked_token` database table.
+- JWT secret storage, rotation, and multiple API-server replicas.
+- The difference between UI/API tokens and internal task execution tokens.
+- How HTTPS protects authentication cookies in transit.
+
+### Useful check
+
+```bash
+kubectl exec -n airflow deployment/airflow-api-server -c api-server -- airflow config get-value api_auth jwt_expiration_time
+```
+
+This item is complete when the login, validation, refresh, expiration,
+revocation, and secret-rotation lifecycle has been tested and documented.
