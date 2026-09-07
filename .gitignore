@@ -2,3 +2,6 @@
 # Downloaded upstream charts used for reference
 /reference/
 /helm/airflow-secrets-values.yaml
+
+# Machine-specific local configuration backups
+/backups/
