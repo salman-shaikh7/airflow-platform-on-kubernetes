@@ -83,3 +83,8 @@ The screenshots below show the platform from an operator's perspective:
 Airflow is running on the Kubernetes cluster with `KubernetesExecutor`,
 persistent PostgreSQL storage, and stable local UI access through MetalLB and
 Envoy Gateway at [http://airflow.local](http://airflow.local).
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). Upstream components
+retain their respective licenses.
