@@ -54,6 +54,30 @@ Scheduler → KubernetesExecutor → temporary task Pod
           → Airflow execution API → PostgreSQL metadata
 ```
 
+## Platform in action
+
+The screenshots below show the platform from an operator's perspective:
+
+### Airflow UI
+
+![Airflow UI](screenshots/airflow.png)
+
+### Airflow task logs from MinIO
+
+![Airflow remote task logs](screenshots/airflow_logs.png)
+
+### Grafana observability dashboard
+
+![Grafana dashboard](screenshots/grafana.png)
+
+### Kubernetes management in VS Code
+
+![VS Code Kubernetes extension](screenshots/vs_code_k8s.png)
+
+### Cluster command-line view
+
+![kubectl cluster view](screenshots/kubectl.png)
+
 ## Status
 
 Airflow is running on the Kubernetes cluster with `KubernetesExecutor`,
